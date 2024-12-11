@@ -24,14 +24,15 @@ def add_prefix(paths, prefix):
 def split_filename(paths):
     return [path.split('/')[-1][:-4] for path in paths]
 
-prefix = 'repos/data/urban_railways/'
-dataset_path = 'repos/data/urban_railways_randla_processed_data'
+prefix = '/data1/mengfanteng/dataset/WHU-Railway3D/urban_railway/'
+test_prefix = '/data1/mengfanteng/dataset/WHU-Railway3D/test_set/urban_railways/'
+dataset_path = '/data1/mengfanteng/dataset/WHU-Railway3D/processed_data/urban_railways_randla_processed_data/'
 train_file_path_txt = 'repos/filelist/urban_railways/0-urban_train.txt'
 val_file_path_txt   = 'repos/filelist/urban_railways/0-urban_val.txt'
 test_file_path_txt  = 'repos/filelist/urban_railways/0-urban_test.txt'
 
 sub_pc_folder = join(dirname(dataset_path), 'input_{:.3f}'.format(cfg.sub_grid_size))
-os.mkdir(sub_pc_folder) if not exists(sub_pc_folder) else None
+os.makedirs(sub_pc_folder, exist_ok=True)# os.mkdir(sub_pc_folder) if not exists(sub_pc_folder) else None
 
 train_paths = read_file_paths(train_file_path_txt)
 val_paths = read_file_paths(val_file_path_txt)
@@ -39,7 +40,7 @@ test_paths = read_file_paths(test_file_path_txt)
 
 train_files = add_prefix(train_paths, prefix)
 val_files = add_prefix(val_paths, prefix)
-test_files = add_prefix(test_paths, prefix)
+test_files = add_prefix(test_paths, test_prefix)
 all_filespath = train_files + val_files + test_files
 
 train_file_name = split_filename(train_paths)
