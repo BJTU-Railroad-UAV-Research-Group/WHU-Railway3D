@@ -1,0 +1,1 @@
+commandline: -I/usr/lib/python2.7/dist-packages/numpy/core/include -I/usr/include/python2.7 -c-std=c++11 -D_GLIBCXX_USE_CXX11_ABI=0-I/usr/lib/python2.7/dist-packages/numpy/core/include -I/usr/include/python2.7
