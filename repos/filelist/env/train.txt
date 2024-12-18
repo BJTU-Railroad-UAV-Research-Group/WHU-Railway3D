@@ -1,0 +1,9 @@
+seg_1/seg_1_label.ply
+seg_3/seg_3_label.ply
+seg_4/seg_4_label.ply
+seg_3/seg_5_label.ply
+seg_6/seg_6_label.ply
+seg_7/seg_7_label.ply
+seg_8/seg_8_label.ply
+seg_9/seg_9_label.ply
+seg_10/seg_10_label.ply

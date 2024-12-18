@@ -1,0 +1,2 @@
+seg_2/seg_2_label.ply
+seg_11/seg_11_label.ply
