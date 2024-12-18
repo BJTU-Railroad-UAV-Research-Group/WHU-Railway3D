@@ -1,5 +1,5 @@
 from utils.helper_tool import DataProcessing as DP
-from utils.helper_tool import ConfigRailway3D as cfg
+from utils.helper_tool import ConfigEnv as cfg
 from os.path import join
 import numpy as np
 import time, pickle, argparse, glob, os
@@ -22,25 +22,25 @@ def split_filename(paths):
     return [path.split('/')[-1][:-4] for path in paths]
 
 # read the subsampled data and divide the data into training and validation
-class Railway3D(Dataset):
+class Env(Dataset):
     def __init__(self):
-        self.name = 'Railway3D'
-        self.path   = '/data1/mengfanteng/dataset/WHU-Railway3D/processed_data/urban_railways_randla_processed_data/'
-        self.prefix = '/data1/mengfanteng/dataset/WHU-Railway3D/urban_railway/'
+        self.name = 'Env'
+        self.path   = '/data1/mengfanteng/dataset/ENVPC_dataset/RandLANet-format/'
+        self.prefix =  '/data1/mengfanteng/dataset/ENVPC_dataset/20241129_MYEnv_PC/'
         self.sub_pc_folder = join(self.path, 'input_{:.3f}'.format(cfg.sub_grid_size))
 
         self.label_to_names = {
-                        0:  'rails',
-                        1:  'track bed',
-                        2:  'masts',
-                        3:  'support devices',
-                        4:  'overhead lines',
-                        5:  'fences',
-                        6:  'poles',
-                        7:  'vegetation',
-                        8:  'buildings',
-                        9:  'ground', 
-                        10: 'other'
+                        0:  'others',
+                        1:  'railroad',
+                        2:  'catenary',
+                        3:  'wire',
+                        4:  'vegetation',
+                        5:  'ground',
+                        6:  'building',
+                        7:  'pole',
+                        8:  'wall',
+                        9:  'drainag', 
+                        10: 'slope'
                                }
         self.num_classes = len(self.label_to_names)
         self.label_values = np.sort([k for k, v in self.label_to_names.items()])
@@ -48,23 +48,19 @@ class Railway3D(Dataset):
         self.ignored_labels = np.sort([])                                              # 这个数据集上没有ignored标签
 
         cfg.ignored_label_inds = [self.label_to_idx[ign_label] for ign_label in self.ignored_labels]
-        cfg.class_weights = DP.get_class_weights('Railway3D')
-        cfg.name = 'Railway3D'
+        cfg.class_weights = DP.get_class_weights('Env')
+        cfg.name = 'Env'
 
-        self.train_file_path_txt = 'repos/filelist/urban_railways/0-urban_train.txt'
-        self.val_file_path_txt   = 'repos/filelist/urban_railways/0-urban_val.txt'
-        self.test_file_path_txt  = 'repos/filelist/urban_railways/0-urban_test.txt'
+        self.train_file_path_txt = 'repos/filelist/env/train.txt'
+        self.val_file_path_txt   = 'repos/filelist/env/val.txt'
         self.train_paths = read_file_paths(self.train_file_path_txt)
         self.val_paths = read_file_paths(self.val_file_path_txt)
-        self.test_paths = read_file_paths(self.test_file_path_txt)
         self.train_paths = add_prefix(self.train_paths, self.prefix)
         self.val_paths = add_prefix(self.val_paths, self.prefix)
-        self.test_paths = add_prefix(self.test_paths, self.prefix)
-        self.all_filespath = self.train_paths + self.val_paths + self.test_paths
+        self.all_filespath = self.train_paths + self.val_paths
         self.train_file_name = split_filename(self.train_paths)
         self.val_file_name = split_filename(self.val_paths)
-        self.test_file_name = split_filename(self.test_paths)
-        self.cloud_names = self.train_file_name + self.val_file_name + self.test_file_name
+        self.cloud_names = self.train_file_name + self.val_file_name
 
         self.train_files = []
         self.val_files = []
@@ -79,8 +75,6 @@ class Railway3D(Dataset):
             ###########################################################
             if pc_name in self.val_file_name:
                 self.val_files.append(sub_file)
-            elif pc_name in self.test_file_name:
-                self.test_files.append(full_file_path)
             elif pc_name in self.train_file_name:
                 self.train_files.append(sub_file)
             else:
@@ -108,8 +102,8 @@ class Railway3D(Dataset):
         self.input_names = {'training': [], 'validation': [], 'test': []}
         self.load_sub_sampled_clouds(cfg.sub_grid_size)
 
-        print('Size of training : ', len(self.input_colors['training']))                # 训练集有多少个场景（112）（Area2-4）
-        print('Size of validation : ', len(self.input_colors['validation']))            # 验证集有44个场景（Area1）
+        print('Size of training : ', len(self.input_colors['training']))
+        print('Size of validation : ', len(self.input_colors['validation']))
         
     def load_sub_sampled_clouds(self, sub_grid_size):
         tree_path = join(self.path, 'input_{:.3f}'.format(sub_grid_size))
@@ -129,7 +123,7 @@ class Railway3D(Dataset):
             sub_ply_file = join(tree_path, '{:s}.ply'.format(cloud_name))
 
             data = read_ply(sub_ply_file)                                                   # data['red'] 就这么读出来的是一个一维向量，存放了所有red的颜色深度
-            sub_colors = np.vstack((data['intensity'], data['intensity'], data['intensity'])).T
+            sub_colors = np.vstack((data['intensity_r'], data['intensity_g'], data['intensity_b'])).T
             sub_labels = data['class']
 
             # Read pkl with search tree
@@ -160,15 +154,6 @@ class Railway3D(Dataset):
                 self.val_proj += [proj_idx]                 # 子云中离某个原始点云点最近点的索引
                 self.val_labels += [labels]
                 print('{:s} done in {:.1f}s'.format(cloud_name, time.time() - t0))   
-
-            if file_path in self.test_paths:
-                # tree_path = join(self.path, 'input_{:.3f}'.format(sub_grid_size))
-                proj_file = join(tree_path, '{:s}_proj.pkl'.format(cloud_name))
-                with open(proj_file, 'rb') as f:
-                    proj_idx, labels = pickle.load(f)
-                self.test_proj += [proj_idx]
-                self.test_labels += [labels]
-
         
     def __getitem__(self, idx):
         pass
@@ -178,7 +163,7 @@ class Railway3D(Dataset):
         return self.size
 
 
-class Railway3DSampler(Dataset):
+class EnvSampler(Dataset):
 
     def __init__(self, dataset, split='training'):
         self.dataset = dataset
