@@ -13,8 +13,8 @@ class Network(nn.Module):
         super().__init__()
         self.config = config
 
-        if(config.name == 'Railway3D'):
-            self.class_weights = DP.get_class_weights('Railway3D')
+        if(config.name == 'Railway3D' or config.name == 'Env'):
+            self.class_weights = DP.get_class_weights('Env')
             self.fc0 = nn.Linear(6, 8)
             self.fc0_acti = nn.LeakyReLU()
             self.fc0_bath = nn.BatchNorm1d(8, eps=1e-6, momentum=0.99)

@@ -1,7 +1,7 @@
 import warnings
-from utils.helper_tool import ConfigRailway3D as cfg
+from utils.helper_tool import ConfigEnv as cfg
 from RandLANet import Network, compute_loss, compute_acc, IoUCalculator
-from Railway3D_dataset import Railway3D, Railway3DSampler # when training with xyz + intensity
+from Env_dataset import Env, EnvSampler # when training with xyz + intensity
 # from Railway3D_dataset_xyz import Railway3D, Railway3DSampler # when training with only xyz
 import numpy as np
 import os, argparse
@@ -16,7 +16,7 @@ import time
 torch.backends.cudnn.enabled = False        # 禁止cudnn加速，不加上反向传播会报错(数据矩阵太大了，如果用一个GPU的话)
 parser = argparse.ArgumentParser()
 parser.add_argument('--checkpoint_path', default=None, help='Model checkpoint path [default: None]')
-parser.add_argument('--log_dir', default='/data1/mengfanteng/RandLANet_exp/', help='Dump dir to save model checkpoint [default: log]')
+parser.add_argument('--log_dir', default='/data1/mengfanteng/RandLANet_exp/Env', help='Dump dir to save model checkpoint [default: log]')
 parser.add_argument('--max_epoch', type=int, default=100, help='Epoch to run [default: 100]')    # 50够了
 parser.add_argument('--gpu', type=int, default=0, help='which gpu do you want to use [default: 2], -1 for cpu')
 FLAGS = parser.parse_args()
@@ -26,7 +26,7 @@ LOG_DIR = FLAGS.log_dir
 LOG_DIR = os.path.join(LOG_DIR, time.strftime('%Y-%m-%d_%H-%M-%S', time.gmtime()))      # 返回的是英国时间
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)                # 创建多级目录
-log_file_name = f'log_train_Railway3D.txt'
+log_file_name = f'log_train_Env.txt'
 LOG_FOUT = open(os.path.join(LOG_DIR, log_file_name), 'a')      # 追加写入模式
 
 
@@ -40,10 +40,10 @@ def log_string(out_str):
 
 # Create Dataset and Dataloader
 
-dataset = Railway3D()
+dataset = Env()
 
-training_dataset = Railway3DSampler(dataset, 'training')
-validation_dataset = Railway3DSampler(dataset, 'validation')
+training_dataset = EnvSampler(dataset, 'training')
+validation_dataset = EnvSampler(dataset, 'validation')
 training_dataloader= DataLoader(training_dataset, batch_size=cfg.batch_size, shuffle=True, collate_fn=training_dataset.collate_fn)
 validation_dataloader = DataLoader(validation_dataset, batch_size=cfg.val_batch_size, shuffle=True, collate_fn=validation_dataset.collate_fn)
 
