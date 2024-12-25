@@ -10,7 +10,7 @@ sys.path.append(BASE_DIR)
 sys.path.append(ROOT_DIR)
 from helper_ply import read_ply, write_ply
 from helper_tool import DataProcessing as DP
-from helper_tool import Env as cfg
+from helper_tool import ConfigEnv as cfg
 
 def read_file_paths(file_path):
     with open(file_path, 'r') as file:
