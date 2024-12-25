@@ -408,7 +408,7 @@ def kernel_point_optimization_debug(radius, num_points, num_kernels=1, dimension
 def load_kernels(radius, num_kpoints, dimension, fixed, lloyd=False):
 
     # Kernel directory
-    kernel_dir = 'kernels/dispositions'
+    kernel_dir = '/data1/mengfanteng/dataset/ENVPC_dataset/kernels/dispositions'
     if not exists(kernel_dir):
         makedirs(kernel_dir)
 

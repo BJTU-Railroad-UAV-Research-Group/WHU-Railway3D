@@ -429,8 +429,8 @@ class ModelTrainer:
         softmax = torch.nn.Softmax(1)
 
         # Do not validate if dataset has no validation cloud
-        if val_loader.dataset.validation_split not in val_loader.dataset.all_splits:
-            return
+        # if val_loader.dataset.validation_split not in val_loader.dataset.all_splits:
+        #     return
 
         # Number of classes including ignored labels
         nc_tot = val_loader.dataset.num_classes
