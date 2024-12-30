@@ -32,9 +32,9 @@ env_label_to_color = np.asarray([
 ])
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--checkpoint_path', default='/data1/mengfanteng/RandLANet_exp/Env/2024-12-13_06-15-07/checkpoint.tar', help='Model checkpoint path [default: None]')
-parser.add_argument('--log_dir', default='/data1/mengfanteng/RandLANet_exp/Env/2024-12-13_06-15-07/test_output', help='Dump dir to save model checkpoint [default: log]')
-parser.add_argument('--gpu', type=int, default=0, help='which gpu do you want to use [default: 2], -1 for cpu')
+parser.add_argument('--checkpoint_path', default='/data1/mengfanteng/RandLANet_exp/Env/2024-12-25_03-24-31/checkpoint.tar', help='Model checkpoint path [default: None]')
+parser.add_argument('--log_dir', default='/data1/mengfanteng/RandLANet_exp/Env/2024-12-25_03-24-31/test_output', help='Dump dir to save model checkpoint [default: log]')
+parser.add_argument('--gpu', type=int, default=1, help='which gpu do you want to use [default: 2], -1 for cpu')
 parser.add_argument('--dataset_name', default='Env', help='dataset name')
 FLAGS = parser.parse_args()
 #################################################   log   #################################################

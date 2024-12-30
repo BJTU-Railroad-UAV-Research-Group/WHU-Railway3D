@@ -20,7 +20,7 @@ class ConfigEnv:
     num_layers = 5  # Number of layers
     num_points = 40960  # Number of input points
     num_classes = 11  # Number of valid classes
-    sub_grid_size = 0.01  # preprocess_parameter
+    sub_grid_size = 0.06  # preprocess_parameter
 
     batch_size = 6  # batch_size during training
     val_batch_size = 20  # batch_size during validation and test
